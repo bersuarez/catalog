@@ -1,0 +1,34 @@
+<html>
+<body>
+
+<h1>Landing</h1>
+
+<h2>Categories</h2>
+
+{% for c in categories %}
+
+<div>
+
+<p>{{c.attribute}}</p>
+
+
+</div>
+
+{% endfor %}
+
+<h2>Latest Items</h2>
+
+{% for i in items %}
+
+<div>
+
+<p>{{i.attribute}}</p>
+
+
+</div>
+
+{% endfor %}
+
+</body>
+
+</html>
