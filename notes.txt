@@ -1,0 +1,7 @@
+falta:
+delete, edit items
+hacer que sirva el de items
+X json
+login y permissions
+css
+corregir titulo de login page

@@ -10,10 +10,10 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-dummyCategory1 = DummyCategory(attribute='dummyvalueC')
+dummyCategory1 = DummyCategory(name='category1',attribute='blabla')
 session.add(dummyCategory1)
 session.commit()
 
-dummyItem1 = DummyItem(attribute='dummyvalueI', category=dummyCategory1)
+dummyItem1 = DummyItem(name='item1',attribute='BLABLA', category=dummyCategory1)
 session.add(dummyItem1)
 session.commit()

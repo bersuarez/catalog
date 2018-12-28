@@ -9,8 +9,7 @@
 
 <div>
 
-<p>{{c.attribute}}</p>
-
+<a href = '{{url_for('categoryItems', category_name = c.name) }}'> {{c.name}}</a>
 
 </div>
 
@@ -22,8 +21,8 @@
 
 <div>
 
-<p>{{i.attribute}}</p>
-
+    <a href = '{{url_for('itemDescription', category_name = categories.name, item_name= i.name) }}'> {{i.name}}</a><p>({{i.category_id}})</p>
+<!-- se necesita two-way binding para saber la categoría basado en el item -->
 
 </div>
 
