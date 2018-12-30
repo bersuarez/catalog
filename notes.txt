@@ -1,7 +1,26 @@
 falta:
-delete, edit items
-hacer que sirva el de items
+X delete, edit items
+X hacer que sirva el de items
 X json
-login y permissions
+
+Necesarios funcionalidad:
+1/2 login y permissions
+X llamar updated category en edit item
+X corregir links en latest items
+
+Neecsarios estética:
 css
 corregir titulo de login page
+
+Improvements:
+código:
+usar unique ID para referir a las cosas, aunque en el url venga el nombre
+usar joins de tablas??
+hacer una misma función para todas las routes???
+
+estética/funcionalidad:
+message flashing?
+agregar escoger de serie de incoonos para agregar categoria
+upload una foto para items (a cloud sotrage)
+ponre foto del usuario que lo creó
+hover over recent items para info o picara boton para lightbox o algo así

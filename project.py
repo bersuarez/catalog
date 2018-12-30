@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from DB_setup import Base, DummyCategory, DummyItem
+from DB_setup import Base, DummyCategory, DummyItem, User
 
 from flask import session as login_session
 import random, string
@@ -16,7 +16,7 @@ import requests
 CLIENT_ID = json.loads(open('client_secrets.json','r').read())['web']['client_id']
 
 app=Flask(__name__)
-engine = create_engine('sqlite:///catalog.db')
+engine = create_engine('sqlite:///catalogandusers.db',connect_args={'check_same_thread':False})
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)
@@ -96,6 +96,12 @@ def gconnect():
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
 
+    #check if user exists, if not make a new one
+    user_id = getUserID(login_session['email'])
+    if not user_id:
+        user_id = createUser(login_session)
+    login_session['user_id'] = user_id
+
     output = ''
     output += '<h1>Welcome, '
     output += login_session['username']
@@ -118,7 +124,7 @@ def gdisconnect():
     print('In gdisconnect access token is %s' %access_token)
     print('User name is: ')
     print(login_session['username'])
-    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' %access_token
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     print('result is ')
@@ -154,14 +160,76 @@ def categoryItems(category_name):
 
 @app.route('/catalog/<string:category_name>/<string:item_name>/')
 def itemDescription(category_name, item_name):
+    category=session.query(DummyCategory).filter_by(name=category_name).one()
     item=session.query(DummyItem).filter_by(name=item_name).one()
-    return render_template('item.html', item=item)
+    return render_template('item.html', category=category, item=item)
+
+@app.route('/catalog/<string:category_name>/<string:item_name>/edit/', methods=['GET', 'POST'])
+def editItem(category_name, item_name):
+    editedItem = session.query(DummyItem).filter_by(name=item_name).one()
+    print(editedItem.name)
+    category=session.query(DummyCategory).filter_by(name=category_name).one()
+    categories=session.query(DummyCategory).all()
+    if request.method =='POST':
+        if request.form['updatedName']:
+            editedItem.name=request.form['updatedName']
+        if request.form['updatedAttribute']:
+            editedItem.attribute=request.form['updatedAttribute']
+        if request.form['updatedCategory']:
+            updatedCategory=session.query(DummyCategory).filter_by(name=request.form['updatedCategory'])
+            editedItem.category=updatedCategory
+        session.add(editedItem)
+        session.commit()
+        return redirect(url_for('landing'))
+    else:
+        return render_template('editItem.html', category=category, item=editedItem, allcategories=categories)
+
+@app.route('/catalog/<string:category_name>/<string:item_name>/delete/', methods=['GET', 'POST'])
+def deleteItem(category_name,item_name):
+    itemToDelete = session.query(DummyItem).filter_by(name=item_name).one()
+    category=session.query(DummyCategory).filter_by(name=category_name).one()
+    if request.method == 'POST':
+        session.delete(itemToDelete)
+        session.commit()
+        return redirect(url_for('landing'))
+    else:
+        return render_template('deleteItem.html', category=category,item=itemToDelete)
+
+@app.route('/catalog/new/', methods=['GET', 'POST'])
+def newItem():
+    categories=session.query(DummyCategory).all()
+    if request.method =='POST':
+        category=session.query(DummyCategory).filter_by(name=request.form['category']).one()
+        newItem = DummyItem(name=request.form['name'],attribute=request.form['attribute'], category=category)#request.form['category'])
+        session.add(newItem)
+        session.commit()
+        return redirect(url_for('landing'))
+    else: 
+        return render_template('newItem.html', allcategories=categories)
 
 @app.route('/catalog/<string:category_name>/JSON')
 def categoryItemsJSON(category_name):
     category = session.query(DummyCategory).filter_by(name=category_name).one()
     items=session.query(DummyItem).filter_by(category_id=category.id)
     return jsonify(DummyClass=[i.serialize for i in items])
+
+def createUser(login_session):
+    newUser = User(name = login_session['username'], email = login_session['email'], picture = login_session['picture'])
+    session.add(newUser)
+    session.commit()
+    user = session.query(User).filter_by(email=login_session['email']).one()
+    return user.id
+
+def getUserInfo(user_id):
+    user=session.query(User).filter_by(id = user_id).one()
+    return user
+
+def getUserID(email):
+    try:
+        user = session.query(User).filter_by(email = email).one()
+        return user.id
+    except:
+        return None
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'

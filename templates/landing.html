@@ -17,11 +17,16 @@
 
 <h2>Latest Items</h2>
 
+<a href = '{{url_for('newItem') }}'> New Item</a>
+
+</br>
+</br>
+
 {% for i in items %}
 
 <div>
 
-    <a href = '{{url_for('itemDescription', category_name = categories.name, item_name= i.name) }}'> {{i.name}}</a><p>({{i.category_id}})</p>
+    <a href = '{{url_for('itemDescription', category_name = i.category.name, item_name= i.name) }}'> {{i.name}}</a><p>({{i.category.name}})</p>
 <!-- se necesita two-way binding para saber la categoría basado en el item -->
 
 </div>
