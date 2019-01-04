@@ -4,13 +4,18 @@ X hacer que sirva el de items
 X json
 
 Necesarios funcionalidad:
-1/2 login y permissions
+X login y permissions
 X llamar updated category en edit item
 X corregir links en latest items
+X botton login/logout
+1/2 arreglar lo del login
+home button
+
+
 
 Neecsarios estética:
 css
-corregir titulo de login page
+Xcorregir titulo de login page
 
 Improvements:
 código:
@@ -19,8 +24,16 @@ usar joins de tablas??
 hacer una misma función para todas las routes???
 
 estética/funcionalidad:
+X dejar claroq ue estás logged in, poniendo fotita y etc
 message flashing?
-agregar escoger de serie de incoonos para agregar categoria
+Agregar íconos a cateogrías
 upload una foto para items (a cloud sotrage)
-ponre foto del usuario que lo creó
+X ponre foto del usuario que lo creó
 hover over recent items para info o picara boton para lightbox o algo así
+
+
+social media:
+empezar con landing page con instreucciones y descripción, link pa ir a página pública donde hay un newsfeed de la info pública de los items, donde hay opción de login
+puedes agregar amigos y sólo te sale la info privada de las publicaciones de tus amigos
+encontrar un theme, categorías y items qué son??
+

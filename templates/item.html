@@ -7,11 +7,17 @@
 
 <p>{{item.attribute}}</p>
 
+{%if item.user_id != login_session['user_id']: %}
+
+{%else:%}
+
 <a href='{{url_for('editItem', category_name = category.name, item_name = item.name) }}'>Edit</a>
 
 </br>
 
 <a href = '{{url_for('deleteItem', category_name = category.name, item_name = item.name ) }}'>Delete</a>
+
+{%endif%}
 
 
 </body>

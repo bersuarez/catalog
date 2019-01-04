@@ -91,7 +91,7 @@ def gconnect():
     answer = requests.get(userinfo_url, params=params)
 
     data = answer.json()
-
+    print(data)
     login_session['username'] = data['name']
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
@@ -135,7 +135,7 @@ def gdisconnect():
         del login_session['username']
         del login_session['email']
         del login_session['picture']
-        response = make_response(json.dumps('Successfully disconnected.'), 200)
+        response = make_response(redirect('/'))
         response.headers['Content-Type'] = 'application/json'
         return response
     else:
@@ -148,7 +148,15 @@ def landing():
     categories = session.query(DummyCategory).all()
     latestItems=session.query(DummyItem)
     # .order_by(dummy_item.id).limit(10)
-    return render_template('landing.html',categories=categories,items=latestItems)
+    if 'username' in login_session:
+        return render_template('landing.html',categories=categories,items=latestItems,login_session=login_session)
+    else:
+        session_status=False
+        print("no conectado")
+        return render_template('landing.html',categories=categories,items=latestItems)
+    print("session:")
+    print(session_status)
+    
 
 @app.route('/catalog/<string:category_name>/')
 def categoryItems(category_name):
@@ -162,7 +170,7 @@ def categoryItems(category_name):
 def itemDescription(category_name, item_name):
     category=session.query(DummyCategory).filter_by(name=category_name).one()
     item=session.query(DummyItem).filter_by(name=item_name).one()
-    return render_template('item.html', category=category, item=item)
+    return render_template('item.html', category=category, item=item, login_session=login_session)
 
 @app.route('/catalog/<string:category_name>/<string:item_name>/edit/', methods=['GET', 'POST'])
 def editItem(category_name, item_name):
@@ -170,13 +178,17 @@ def editItem(category_name, item_name):
     print(editedItem.name)
     category=session.query(DummyCategory).filter_by(name=category_name).one()
     categories=session.query(DummyCategory).all()
+    if 'username' not in login_session:
+        return redirect('/login')
+    if editedItem.user_id != login_session['user_id']:
+        return "<script>function alertUser() {alert('You are not authorized to edit this item.');}</script><body onload='alertUser() ''>"
     if request.method =='POST':
         if request.form['updatedName']:
             editedItem.name=request.form['updatedName']
         if request.form['updatedAttribute']:
             editedItem.attribute=request.form['updatedAttribute']
         if request.form['updatedCategory']:
-            updatedCategory=session.query(DummyCategory).filter_by(name=request.form['updatedCategory'])
+            updatedCategory=session.query(DummyCategory).filter_by(name=request.form['updatedCategory']).one()
             editedItem.category=updatedCategory
         session.add(editedItem)
         session.commit()
@@ -188,6 +200,10 @@ def editItem(category_name, item_name):
 def deleteItem(category_name,item_name):
     itemToDelete = session.query(DummyItem).filter_by(name=item_name).one()
     category=session.query(DummyCategory).filter_by(name=category_name).one()
+    if 'username' not in login_session:
+        return redirect('/login')
+    if itemToDelete.user_id != login_session['user_id']:
+        return "<script>function alertUser() {alert('You are not authorized to delete this item.');}</script><body onload='alertUser() ''>"
     if request.method == 'POST':
         session.delete(itemToDelete)
         session.commit()
@@ -200,7 +216,7 @@ def newItem():
     categories=session.query(DummyCategory).all()
     if request.method =='POST':
         category=session.query(DummyCategory).filter_by(name=request.form['category']).one()
-        newItem = DummyItem(name=request.form['name'],attribute=request.form['attribute'], category=category)#request.form['category'])
+        newItem = DummyItem(name=request.form['name'],attribute=request.form['attribute'], category=category, user_id=login_session['user_id'])#request.form['category'])
         session.add(newItem)
         session.commit()
         return redirect(url_for('landing'))
