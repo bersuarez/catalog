@@ -1,5 +1,10 @@
 
 <html>
+        <head>
+
+                <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+                <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+        </head>
     <body>
     <h1> Delete Item </h1>
 
@@ -10,6 +15,13 @@
     <input type='submit', value = 'Delete'>
     
     </form>
-    <a href = '{{url_for('itemDescription', category_name = category.name, item_name= item.name) }}'> Cancel</a>
+    <form action="{{url_for('landing')}}">
+        <button class="button home" type="submit">
+            <span>
+                    <i class="fa fa-home"></i>
+        </span>
+        </button>
+    </form>
+    
     </body>
     </html>

@@ -1,4 +1,8 @@
 <html>
+<head>
+
+        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+</head>
 <body>
 
 <h1>Landing</h1>
@@ -7,16 +11,14 @@
 
 {%if 'username' not in login_session:%}
 
-<a href = '{{url_for('showLogin') }}'>login</a>
+<a href = '{{url_for('showLogin') }}'style="position:fixed; top:50px; right:90px">login</a>
 
 
 {%else:%}
 
-<h2>Logged in as:</h2>
-<p>{{login_session['username']}}</p>
-<img src={{login_session['picture']}} style = "width: 50px; height: 50px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> 
-
-<a href = '{{url_for('gdisconnect') }}'>logout</a>
+<p class=profilename>{{login_session['username']}}</p>
+<img src={{login_session['picture']}} class=profilepic > 
+<a href = '{{url_for('gdisconnect') }}' style="position:fixed; top:50px; right:90px">logout</a>
 
 {%endif%}
 
