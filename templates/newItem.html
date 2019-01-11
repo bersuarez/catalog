@@ -1,37 +1,32 @@
-
 <html>
-        <head>
-
-                <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
-        </head>
-    <body>
-    <h1> New Item </h1>
-    
-    <form action="{{url_for('newItem')}}" method = 'POST'>
-    
-    <p>Name</p>
-        
-    <input type='text' size='30' name='name'>
-
-    <p>Attribute</p>
-        
-    <input type='text' size='30' name='attribute''>
-    
-    <p>Category</p>
-
-    <select type='text' name='category'>
-
-        {% for c in allcategories %}
-
-            <option value={{c.name}}>{{c.name}}</option>
-        
-        {% endfor %}
-
-      </select>
-
-    <input type='submit' value='Submit'>
-    
-    </form>
-    <a href = '{{url_for('newItem') }}'> Cancel</a>
-    </body>
-    </html>
+<head>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+<h1> New Item </h1>
+{%if 'username' not in login_session:%}
+<a href = '{{url_for('showLogin') }}'style="position:fixed; top:50px; right:90px">login</a>
+{%else:%}
+<p class=profilename style="color: #fff">{{login_session['username']}}</p>
+<img src={{login_session['picture']}} class=profilepic " >  
+<a href = '{{url_for('gdisconnect') }}' style="color: #fff; position:fixed; top:50px; right:90px">logout</a>
+{%endif%}
+<a href = '{{url_for('landing') }}'style="position:fixed; top:65px; right:90px; font-size: 2em">⌂</a>
+<form action="{{url_for('newItem')}}" method = 'POST'>
+<p>Name</p>
+<input type='text' size='30' name='name'>
+<p>Description</p>
+<input type='text' size='30' name='description'>
+<p>Category</p>
+<select type='text' name='category'>
+{% for c in allcategories %}
+<option value={{c.name}}>{{c.name}}</option>
+{% endfor %}
+</select>
+<p>Location</p>
+<input type='text' size='30' name='location'>
+<input type='submit' value='Submit'>
+</form>
+<a href = '{{url_for('newItem') }}'> Cancel</a>
+</body>
+</html>

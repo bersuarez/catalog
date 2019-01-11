@@ -3,19 +3,9 @@ body            { font-family: avenir; background-color: #333333; background-ima
 h1, h2          { font-family: 'avenir', serif; margin: 0; }
 h2              { font-size: 1.2em; }
 
-p               { color: #fff;}
+p               { color: #000;}
 
-a {text-decoration: none; color:#FFf; font-size: 1em;}
-
-.pane {position:absolute; left: 25%; border: 2px solid;
-    border-radius: 25px; padding: 5px; margin: 5px; border-color: #999999; background-color: #333333; }
-.header         {left:50%; text-align: center;}
-.name {width:50%;display: inline-block; float: left;}
-.description {}
-.price {text-align: right; width:50%; float: right; }
-.editdeletepane{}
-
-.flash          { background: #cee5F5; }
+a {text-decoration: none; coloR:white; font-size: 1em;}
 
 .profilepic{
   position: fixed;
@@ -34,7 +24,75 @@ a {text-decoration: none; color:#FFf; font-size: 1em;}
   top:10;
   right:90px;
 }
-/* Style buttons */
+
+.cardcontainer{
+  display:table;
+  width:77%;
+  height: 100%px;
+  padding-top: 20px;
+  padding-right: 20px;
+  padding-bottom: 20px;
+  padding-left: 20px;
+  margin: 10px 10px 10px 10px;
+}
+.card{
+  display: table-cell;
+  height: 300px;
+  width: 180px;
+  box-shadow: 0px 5px 15px 0px rgba(153,153,153,0.5);
+  border-radius: 4px;
+  background-color: #fff;
+  padding-top: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  margin: 10px 10px 10px 10px;
+}
+.cardbig{
+  position:absolute;
+  left:25%;
+  height: 650px;
+  width: 700px;
+  box-shadow: 0px 5px 15px 0px rgba(153,153,153,0.5);
+  border-radius: 4px;
+  background-color: #fff;
+  padding-top: 10px;
+  padding-right: 10px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  margin: 10px 10px 10px 10px;
+}
+
+
+.creatorpic{
+  float: right;
+  width: 20px; 
+  height: 20px;
+  border-radius: 150px;
+  -webkit-border-radius: 150px;
+  -moz-border-radius: 150px;
+}
+
+.creatorname{
+  width:90px;
+  display: table-cell;
+}
+
+.itemname{
+  font-size:1.5em;
+  text-align:center;
+}
+.categoryname{
+  font-size:0.8em;
+  text-align:center;
+}
+
+.categories_list{
+  position: fixed;
+  top: 100;
+  right: 20;
+}
+
 .button {
   border-radius: 3px;
   background-color: #fff;

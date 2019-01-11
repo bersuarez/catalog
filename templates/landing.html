@@ -1,57 +1,55 @@
-<html>
-<head>
-
-        <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-
-<h1>Landing</h1>
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
-{%if 'username' not in login_session:%}
-
-<a href = '{{url_for('showLogin') }}'style="position:fixed; top:50px; right:90px">login</a>
-
-
-{%else:%}
-
-<p class=profilename>{{login_session['username']}}</p>
-<img src={{login_session['picture']}} class=profilepic > 
-<a href = '{{url_for('gdisconnect') }}' style="position:fixed; top:50px; right:90px">logout</a>
-
+<html >
+<head >
+<link rel = stylesheet
+type = text/css
+href = "{{ url_for('static', filename='styles.css') }}" >
+</head >
+<body >
+<h1 > Eventlog </h1 >
+{%if 'username' not in login_session: %}
+<a href = '{{url_for('showLogin') }}'style="position:fixed; top:50px; right:90px" > login </a >
+{%else: %}
+<p class = profilename style = "color: #fff" > {{login_session['username']}} </p >
+<img src = {{login_session['picture']}} class=profilepic " >
+<a href = '{{url_for('gdisconnect') }}' style="color: #fff; position:fixed; top:50px; right:90px" > logout </a >
 {%endif%}
-
-<h2>Categories</h2>
-
+<div class=categories_list >
+<h2 > Categories </h2 >
 {% for c in categories %}
-
-<div>
-
-<a href = '{{url_for('categoryItems', category_name = c.name) }}'> {{c.name}}</a>
-
-</div>
-
+<div >
+<a href = '{{url_for('categoryItems', category_name = c.name) }}' > {{c.name}} </a >
+</div >
 {% endfor %}
-
-<h2>Latest Items</h2>
-
-<a href = '{{url_for('newItem') }}'> New Item</a>
-
-</br>
-</br>
-
+</div >
+<div >
+<div class = cardcontainer >
+<h2 > Newsfeed </h2 >
+{%if 'username' not in login_session: %}
+{%else: %}
+<a href = '{{url_for('newItem') }}' > New Item </a >
+{%endif%}
+</br >
+</br >
 {% for i in items %}
-
-<div>
-
-    <a href = '{{url_for('itemDescription', category_name = i.category.name, item_name= i.name) }}'> {{i.name}}</a><p>({{i.category.name}})</p><p>({{i.user.name}})</p><img src={{i.user.picture}} style = "width: 20px; height: 20px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> 
-<!-- se necesita two-way binding para saber la categoría basado en el item -->
-
-</div>
-
+<a href = '{{url_for('itemDescription', category_name = i.category.name, item_name = i.name) }}' >
+<span class = card id = "{{i.id}}" >
+<div class = card_top >
+{%if 'username' in login_session: %}
+<img src = {{i.user.picture}} class = creatorpic > 
+<p > {{i.user.name}} </p >
+{%endif%}
+</div >
+<div class = card_middle >
+<p class = itemname > {{i.name}} </p >
+<p class = categoryname > {{i.category.name}} </p >
+</div >
+<div class = card_bottom >
+<p > {{i.attribute}} </p >
+<img src = 'https://maps.googleapis.com/maps/api/staticmap?center={{i.location}}&zoom=11&size=180x100&maptype=terrain&key=AIzaSyA8awlI2IYfCI3CY3hBo0HzGzf3TeS68bQ' > 
+</div >
+</span >
+</a >
 {% endfor %}
-
-</body>
-
-</html>
+</div >
+</body >
+</html >
