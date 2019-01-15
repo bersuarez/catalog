@@ -132,3 +132,10 @@ a {text-decoration: none; coloR:white; font-size: 1em;}
   right: 30;
 }
 
+input:invalid {
+  border: 2px dotted green ;
+}
+
+input:valid {
+  border: 2px solid black;
+}

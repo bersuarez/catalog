@@ -1,49 +1,49 @@
 <html>
-<head>
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-{%if 'username' not in login_session:%}
-<a href = '{{url_for('showLogin') }}'style="position:fixed; top:50px; right:90px">login</a>
-{%else:%}
-<p class=profilename style="color: #fff">{{login_session['username']}}</p>
-<img src={{login_session['picture']}} class=profilepic " >  
-<a href = '{{url_for('gdisconnect') }}' style="color: #fff; position:fixed; top:50px; right:90px">logout</a>
-{%endif%}
-<a href = '{{url_for('landing') }}'style="position:fixed; top:65px; right:90px; font-size: 2em">⌂</a>
-<div>
-<span class=cardbig id="{{item.id}}">
-<div class=card_top>
-{%if 'username' in login_session:%}
-<img src={{item.user.picture}} style="float: right;
-width: 50px; 
-height: 50px;
-border-radius: 150px;
--webkit-border-radius: 150px;
--moz-border-radius: 150px;"> 
-<p style="float:right;">{{item.user.name}}</p >
-{%endif%}
-</div>
-<div class=card_middle>
-</br>
-</br>
-<p class=itemname>{{item.name}}</p>
-<p class=categoryname>{{item.category.name}}</p>
-<p>{{item.description}}</p>
-</div>
-<div class=card_bottom>
-<p >{{item.attribute}}</p>
-<img src='https://maps.googleapis.com/maps/api/staticmap?center={{item.location}}&zoom=13&size=1100x400&maptype=terrain&key=AIzaSyA8awlI2IYfCI3CY3hBo0HzGzf3TeS68bQ' style="display: block;
-margin-left: auto;
-margin-right: auto;">
-{%if item.user_id != login_session['user_id']: %}
-{%else:%}
-<a href='{{url_for('editItem', category_name = category.name, item_name = item.name)}}' style="color:black">Edit</a>
-</br>
-<a href = '{{url_for('deleteItem', category_name = category.name, item_name = item.name )}}' style="color:black">Delete</a>
-{%endif%} 
-</div>
-</span>
-</div>
-</body>
+   <head>
+      <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+   </head>
+   <body>
+      {%if 'username' not in login_session:%}
+      <a href = '{{url_for('showLogin') }}'style="position:fixed; top:50px; right:90px">login</a>
+      {%else:%}
+      <p class=profilename style="color: #fff">{{login_session['username']}}</p>
+      <img src={{login_session['picture']}} class=profilepic " >  
+      <a href = '{{url_for('gdisconnect') }}' style="color: #fff; position:fixed; top:50px; right:90px">logout</a>
+      {%endif%}
+      <a href = '{{url_for('landing') }}'style="position:fixed; top:65px; right:90px; font-size: 2em">⌂</a>
+      <div>
+         <span class=cardbig id="{{item.id}}">
+            <div class=card_top>
+               {%if 'username' in login_session:%}
+               <img src={{item.user.picture}} style="float: right;
+                  width: 50px; 
+                  height: 50px;
+                  border-radius: 150px;
+                  -webkit-border-radius: 150px;
+                  -moz-border-radius: 150px;"> 
+               <p style="float:right;">{{item.user.name}}</p >
+               {%endif%}
+            </div>
+            <div class=card_middle>
+               </br>
+               </br>
+               <p class=itemname>{{item.name}}</p>
+               <p class=categoryname>{{item.category.name}}</p>
+               <p>{{item.description}}</p>
+            </div>
+            <div class=card_bottom>
+               <p >{{item.attribute}}</p>
+               <img src='https://maps.googleapis.com/maps/api/staticmap?center={{item.location}}&zoom=13&size=1100x400&maptype=terrain&key=AIzaSyA8awlI2IYfCI3CY3hBo0HzGzf3TeS68bQ' style="display: block;
+                  margin-left: auto;
+                  margin-right: auto;">
+               {%if item.user_id != login_session['user_id']: %}
+               {%else:%}
+               <a href='{{url_for('editItem', category_name = category.name, item_name = item.name)}}' style="color:black">Edit</a>
+               </br>
+               <a href = '{{url_for('deleteItem', category_name = category.name, item_name = item.name )}}' style="color:black">Delete</a>
+               {%endif%} 
+            </div>
+         </span>
+      </div>
+   </body>
 </html>

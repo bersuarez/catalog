@@ -1,53 +1,53 @@
-<html >
-<head >
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-{%if 'username' not in login_session:%}
-<a href = '{{url_for('showLogin') }}'style="position:fixed; top:50px; right:90px">login</a>
-{%else:%}
-<p class=profilename style="color: #fff">{{login_session['username']}}</p>
-<img src={{login_session['picture']}} class=profilepic " >  
-<a href = '{{url_for('gdisconnect') }}' style="color: #fff; position:fixed; top:50px; right:90px">logout</a>
-{%endif%}
-<a href = '{{url_for('landing') }}'style="position:fixed; top:65px; right:90px; font-size: 2em">⌂</a>
-<h1>{{category.name}}</h1>
-<h3>{{category.attribute}}</h3>
-<div class=categories_list>
-<h2>Categories</h2>
-{% for c in categories %}
-<div>
-<a href = '{{url_for('categoryItems', category_name = c.name) }}'> {{c.name}}</a>
-</div>
-{% endfor %}
-</div>
-<div class=cardcontainer>
-{%if 'username' not in login_session:%}
-{%else:%}
-<a href = '{{url_for('newItem') }}'> New Item</a>
-{%endif%}
-</br>
-</br>
-{% for i in items %}
-<a href = '{{url_for('itemDescription', category_name = i.category.name, item_name= i.name) }}'>
-<span class=card id="{{i.id}}">
-<div class=card_top>
-{%if 'username' in login_session:%}
-<img src={{i.user.picture}} class=creatorpic> 
-<p>{{i.user.name}}</p class=creatorname>
-{%endif%}
-</div>
-<div class=card_middle>
-<p class=itemname>{{i.name}}</p>
-<p class=categoryname>{{i.category.name}}</p>
-</div>
-<div class=card_bottom>
-<p >{{i.attribute}}</p>
-<img src='https://maps.googleapis.com/maps/api/staticmap?center={{i.location}}&zoom=11&size=180x100&maptype=terrain&key=AIzaSyA8awlI2IYfCI3CY3hBo0HzGzf3TeS68bQ'> 
-</div>
-</span>
-</a>
-{% endfor %}
-</div>
-</body>
+ <html >
+   <head >
+      <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+   </head>
+   <body>
+      {%if 'username' not in login_session:%}
+      <a href = '{{url_for('showLogin') }}'style="position:fixed; top:50px; right:90px">login</a>
+      {%else:%}
+      <p class=profilename style="color: #fff">{{login_session['username']}}</p>
+      <img src={{login_session['picture']}} class=profilepic " >  
+      <a href = '{{url_for('gdisconnect') }}' style="color: #fff; position:fixed; top:50px; right:90px">logout</a>
+      {%endif%}
+      <a href = '{{url_for('landing') }}'style="position:fixed; top:65px; right:90px; font-size: 2em">⌂</a>
+      <h1>{{category.name}}</h1>
+      <h3>{{category.attribute}}</h3>
+      <div class=categories_list>
+         <h2>Categories</h2>
+         {% for c in categories %}
+         <div>
+            <a href = '{{url_for('categoryItems', category_name = c.name) }}'> {{c.name}}</a>
+         </div>
+         {% endfor %}
+      </div>
+      <div class=cardcontainer>
+         {%if 'username' not in login_session:%}
+         {%else:%}
+         <a href = '{{url_for('newItem') }}'> New Item</a>
+         {%endif%}
+         </br>
+         </br>
+         {% for i in items %}
+         <a href = '{{url_for('itemDescription', category_name = i.category.name, item_name= i.name) }}'>
+         <span class=card id="{{i.id}}">
+            <div class=card_top>
+               {%if 'username' in login_session:%}
+               <img src={{i.user.picture}} class=creatorpic> 
+               <p>{{i.user.name}}</p class=creatorname>
+                  {%endif%}
+            </div>
+            <div class=card_middle>
+               <p class=itemname>{{i.name}}</p>
+               <p class=categoryname>{{i.category.name}}</p>
+            </div>
+            <div class=card_bottom>
+               <p >{{i.attribute}}</p>
+               <img src='https://maps.googleapis.com/maps/api/staticmap?center={{i.location}}&zoom=11&size=180x100&maptype=terrain&key=AIzaSyA8awlI2IYfCI3CY3hBo0HzGzf3TeS68bQ'> 
+            </div>
+         </span>
+         </a>
+         {% endfor %}
+      </div>
+   </body>
 </html>

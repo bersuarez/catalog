@@ -1,20 +1,20 @@
 <html>
-<head>
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
-</head>
-<body>
-<h1> Delete Item </h1>
-<h2>{{item.name}} </h2>
-{%if 'username' not in login_session:%}
-<a href = '{{url_for('showLogin') }}'style="position:fixed; top:50px; right:90px">login</a>
-{%else:%}
-<p class=profilename style="color: #fff">{{login_session['username']}}</p>
-<img src={{login_session['picture']}} class=profilepic " >  
-<a href = '{{url_for('gdisconnect') }}' style="color: #fff; position:fixed; top:50px; right:90px">logout</a>
-{%endif%}
-<a href = '{{url_for('landing') }}'style="position:fixed; top:65px; right:90px; font-size: 2em">⌂</a>
-<form action="{{url_for('deleteItem', category_name=category.name, item_name = item.name )}}" method = 'POST'>
-<input type='submit', value = 'Delete'>
-<a href = '{{url_for('itemDescription', category_name = category.name, item_name= item.name) }}'> Cancel</a>
-</body>
+   <head>
+      <link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles.css') }}">
+   </head>
+   <body>
+      <h1> Delete Item </h1>
+      <h2>{{item.name}} </h2>
+      {%if 'username' not in login_session:%}
+      <a href = '{{url_for('showLogin') }}'style="position:fixed; top:50px; right:90px">login</a>
+      {%else:%}
+      <p class=profilename style="color: #fff">{{login_session['username']}}</p>
+      <img src={{login_session['picture']}} class=profilepic " >  
+      <a href = '{{url_for('gdisconnect') }}' style="color: #fff; position:fixed; top:50px; right:90px">logout</a>
+      {%endif%}
+      <a href = '{{url_for('landing') }}'style="position:fixed; top:65px; right:90px; font-size: 2em">⌂</a>
+      <form action="{{url_for('deleteItem', category_name=category.name, item_name = item.name )}}" method = 'POST'>
+      <input type='submit', value = 'Delete'>
+      <a href = '{{url_for('itemDescription', category_name = category.name, item_name= item.name) }}'> Cancel</a>
+   </body>
 </html>

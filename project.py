@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+'''
+This files starts a flask webserver and routes to the different functions
+'''
 
 from flask import (Flask, render_template, request,
                    redirect, url_for, flash, jsonify)
@@ -16,6 +19,15 @@ import httplib2
 import json
 from flask import make_response
 import requests
+import logging
+
+# Create and configure logger
+LOG_FORMAT = "%(levelname)s %(asctime)s - %(message)s"
+logging.basicConfig(filename="bug&info.log",
+                    level=logging.DEBUG,
+                    format=LOG_FORMAT,
+                    filemode='w')
+logger = logging.getLogger()
 
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
@@ -31,6 +43,9 @@ session = DBSession()
 
 @app.route('/login')
 def showLogin():
+    '''
+    Determines session state and renders login template
+    '''
     state = ''.join(
         random.choice(string.ascii_uppercase + string.digits)
         for x in range(32))
@@ -40,6 +55,17 @@ def showLogin():
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
+    '''
+    Logic for oauth2 connection.
+    1. Validates state token
+    2. Obtains authorization code
+    3. Checks access token validity
+    4.Verifies user-token congruency
+    5. Verifies app-token congruency
+    6.Stores session token
+    7. Adds new users to DB
+    8. Welcomes user
+    '''
     # Validate state token
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
@@ -83,7 +109,6 @@ def gconnect():
     if result['issued_to'] != CLIENT_ID:
         response = make_response(json.dumps(
             "Token's client ID does not match app's."), 401)
-        print("Token's client ID does not match app's.")
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -105,7 +130,6 @@ def gconnect():
     answer = requests.get(userinfo_url, params=params)
 
     data = answer.json()
-    print(data)
     login_session['username'] = data['name']
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
@@ -128,36 +152,47 @@ def gconnect():
     output += '-webkit-border-radius: 150px;'
     output += '-moz-border-radius: 150px;"> '
     flash("you are now logged in as %s" % login_session['username'])
-    print("done!")
     return output
 
 
 @app.route('/gdisconnect')
 def gdisconnect():
+    '''
+    1. Check if user is connected
+    2. Execute HTTP GET request to revoke current token
+    3. Reset user's sessino
+    4. Create response and redirect
+    5. Catch anything other than a 200 message
+    '''
     access_token = login_session.get('access_token')
+    # Only disconnect a connected user
     if access_token is None:
-        print('Access Token is None')
+        logger.debug('Access Token is None')
         response = make_response(json.dumps(
             'Current user not connected.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
-    print('In gdisconnect access token is %s' % access_token)
-    print('User name is: ')
-    print(login_session['username'])
+    logger.info('In gdisconnect access token is %s' % access_token)
+    logger.info('User name is: ')
+    logger.info(login_session['username'])
+    # Execute HTTP GET request to revoke current token
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
-    print('result is ')
-    print(result)
+    logger.info('result is ')
+    logger.info(result)
     if result['status'] == '200':
+        # Reset the user's session
         del login_session['access_token']
         del login_session['gplus_id']
         del login_session['username']
         del login_session['email']
         del login_session['picture']
+        # create response and redirect
         response = make_response(redirect('/'))
         response.headers['Content-Type'] = 'application/json'
         return response
+        # Catch anything other than a 200 message
     else:
         response = make_response(json.dumps(
             'Failed to revoke token for given user.', 400))
@@ -167,6 +202,9 @@ def gdisconnect():
 
 @app.route('/')
 def landing():
+    '''
+    Render main page, some items depend on wether the user is logger in
+    '''
     categories = session.query(EventType).all()
     latestItems = session.query(
                     Event).order_by(desc(Event.id)).limit(10)
@@ -183,6 +221,9 @@ def landing():
 
 @app.route('/catalog/<string:category_name>/')
 def categoryItems(category_name):
+    '''
+    Display newsfeed filtered by category
+    '''
     categories = session.query(EventType).all()
     category = session.query(EventType).filter_by(name=category_name).one()
     items = session.query(Event).filter_by(category_id=category.id).all()
@@ -195,6 +236,9 @@ def categoryItems(category_name):
 
 @app.route('/catalog/<string:category_name>/<string:item_name>/')
 def itemDescription(category_name, item_name):
+    '''
+    Shows a single item and enlarged description
+    '''
     category = session.query(EventType).filter_by(name=category_name).one()
     item = session.query(Event).filter_by(name=item_name).one()
     return render_template('item.html',
@@ -206,21 +250,24 @@ def itemDescription(category_name, item_name):
 @app.route('/catalog/<string:category_name>/<string:item_name>/edit/',
            methods=['GET', 'POST'])
 def editItem(category_name, item_name):
+    '''
+    Get: html form to edit item
+    Post: change item attributes
+    '''
     editedItem = session.query(Event).filter_by(name=item_name).one()
-    print(editedItem.name)
     category = session.query(EventType).filter_by(name=category_name).one()
     categories = session.query(EventType).all()
-    #redirect if user is not logged in
+    # redirect if user is not logged in
     if 'username' not in login_session:
         return redirect('/login')
-    #Restrict URL for users that did not create the item
+    # Restrict URL for users that did not create the item
     if editedItem.user_id != login_session['user_id']:
         output = ""
         output += "<script>function alertUser()"
         output += "{alert('You are not authorized to edit this item.');}"
         output += "</script><body onload='alertUser() ''>"
         return output
-    #Update DB according to the entries that were modified
+    # Update DB according to the entries that were modified
     if request.method == 'POST':
         if request.form['updatedName']:
             editedItem.name = request.form['updatedName']
@@ -233,7 +280,7 @@ def editItem(category_name, item_name):
             editedItem.category = updatedCategory
         if request.form['updatedLocation']:
             editedItem.location = request.form['updatedLocation']
-    #add updates to DB    
+    # add updates to DB
         session.add(editedItem)
         session.commit()
         return redirect(url_for('landing'))
@@ -248,19 +295,23 @@ def editItem(category_name, item_name):
 @app.route('/catalog/<string:category_name>/<string:item_name>/delete/',
            methods=['GET', 'POST'])
 def deleteItem(category_name, item_name):
+    '''
+    Get: html form to edit item
+    Post: delete item form DB
+    '''
     itemToDelete = session.query(Event).filter_by(name=item_name).one()
     category = session.query(EventType).filter_by(name=category_name).one()
-    #redirect if user is not logged in
+    # redirect if user is not logged in
     if 'username' not in login_session:
         return redirect('/login')
-    #Restrict URL for users that did not create the item
+    # Restrict URL for users that did not create the item
     if itemToDelete.user_id != login_session['user_id']:
         output = ""
         output += "<script>function alertUser()"
         output += "{alert('You are not authorized to delete this item.');}"
         output += "</script><body onload='alertUser() ''>"
         return output
-    #Update DB if item was deleted
+    # Update DB if item was deleted
     if request.method == 'POST':
         session.delete(itemToDelete)
         session.commit()
@@ -274,24 +325,28 @@ def deleteItem(category_name, item_name):
 
 @app.route('/catalog/new/', methods=['GET', 'POST'])
 def newItem():
+    '''
+    Get: html form to create item
+    Post: adds item to DB
+    '''
     categories = session.query(EventType).all()
-    #Restrict URL if user is not logged in
+    # Restrict URL if user is not logged in
     if 'username' not in login_session:
         output = ""
         output += "<script>function alertUser()"
         output += "{alert('Sign in to add a new item.');}"
         output += "</script><body onload='alertUser() ''>"
         return output
-    #Add new entry to DB with specified values
+    # Add new entry to DB with specified values
     if request.method == 'POST':
         category = session.query(
                                 EventType).filter_by(
                                 name=request.form['category']).one()
         newItem = Event(name=request.form['name'],
-                            description=request.form['description'],
-                            category=category,
-                            user_id=login_session['user_id'],
-                            location=request.form['location'])
+                        description=request.form['description'],
+                        category=category,
+                        user_id=login_session['user_id'],
+                        location=request.form['location'])
         session.add(newItem)
         session.commit()
         return redirect(url_for('landing'))
@@ -301,15 +356,21 @@ def newItem():
                                login_session=login_session)
 
 
-#JSON route
+# JSON route
 @app.route('/catalog/<string:category_name>/<string:item_name>/JSON')
 def itemInfoJSON(category_name, item_name):
+    '''
+    Routes to JSON endpoint containing item information
+    '''
     item = session.query(Event).filter_by(name=item_name).one()
     return jsonify(Event=item.serialize)
 
 
-#add users to DB once they log in
+# add users to DB once they log in
 def createUser(login_session):
+    '''
+    Adds users to DB once the log in
+    '''
     newUser = User(name=login_session['username'],
                    email=login_session['email'],
                    picture=login_session['picture'])
@@ -319,14 +380,20 @@ def createUser(login_session):
     return user.id
 
 
-#If user already in DB, get info
+# If user already in DB, get info
 def getUserInfo(user_id):
+    '''
+    Get user info if it already exists
+    '''
     user = session.query(User).filter_by(id=user_id).one()
     return user
 
 
-#If user already in DB, get ID
+# If user already in DB, get ID
 def getUserID(email):
+    '''
+    Get user ID if it already exists
+    '''
     try:
         user = session.query(User).filter_by(email=email).one()
         return user.id
